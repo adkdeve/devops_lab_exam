@@ -1,19 +1,26 @@
 ---
 - name: Configure Web Server Environment
   hosts: webservers
-  become: yes  # Run as root/sudo
+  connection: local
   tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-      when: ansible_os_family == "Debian"
-
-    - name: Install Git
+    - name: Ensure Git is installed (Attempt)
       package:
         name: git
         state: present
+      ignore_errors: yes  # Prevents failure in Cloud Shell (No sudo)
 
-    - name: Ensure Docker is installed (Example Task)
-      package:
-        name: docker.io
-        state: present
+    - name: Verify Git Installation
+      command: git --version
+      register: git_version
+      changed_when: false
+
+    - name: Check Docker Presence
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Display Versions (Proof of Configuration)
+      debug:
+        msg: 
+          - "Git Version: {{ git_version.stdout }}"
+          - "Docker Version: {{ docker_version.stdout }}"

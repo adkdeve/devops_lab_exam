@@ -1,10 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DevOps Exam App</title>
+    <title>DevOps Guestbook</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        input { padding: 10px; margin: 5px; width: 200px; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        #entries { margin-top: 20px; text-align: left; display: inline-block; }
+        .entry { background: #f4f4f4; padding: 10px; margin-bottom: 5px; border-radius: 5px; }
+    </style>
 </head>
 <body>
-    <h1>Frontend Loaded Successfully</h1>
-    <p>This is the 3-tier application for the Final Exam.</p>
+    <h1>✍️ DevOps Guestbook</h1>
+    
+    <div>
+        <input type="text" id="name" placeholder="Your Name">
+        <input type="text" id="msg" placeholder="Your Message">
+        <br>
+        <button onclick="signBook()">Sign Guestbook</button>
+    </div>
+
+    <h3>Recent Signatures:</h3>
+    <div id="entries">Loading...</div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // For Local Docker Testing: Use http://localhost:5000
+        // For Azure Kubernetes: You will replace this with your Backend External IP later
+        const API_URL = "http://localhost:5000"; 
+        // ---------------------
+
+        async function loadGuests() {
+            try {
+                const res = await fetch(`${API_URL}/guests`);
+                const data = await res.json();
+                const list = document.getElementById('entries');
+                list.innerHTML = data.map(g => `<div class='entry'><b>${g[0]}:</b> ${g[1]}</div>`).join('');
+            } catch (err) {
+                document.getElementById('entries').innerHTML = "Failed to load backend.";
+            }
+        }
+
+        async function signBook() {
+            const name = document.getElementById('name').value;
+            const message = document.getElementById('msg').value;
+            
+            await fetch(`${API_URL}/sign`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, message })
+            });
+            
+            document.getElementById('name').value = '';
+            document.getElementById('msg').value = '';
+            loadGuests(); // Reload list
+        }
+
+        // Load data on page start
+        loadGuests();
+    </script>
 </body>
 </html>
