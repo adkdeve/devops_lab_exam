@@ -20,7 +20,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install flask psycopg2-binary
+          pip install flask psycopg2-binary flask-cors
 
       - name: Run Basic Test
         run: |
