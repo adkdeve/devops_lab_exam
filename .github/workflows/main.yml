@@ -2,9 +2,9 @@ name: DevOps Exam CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "alee" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "alee" ]
 
 jobs:
   build-and-test:
